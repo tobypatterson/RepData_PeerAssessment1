@@ -6,19 +6,15 @@ output:  html_document
 keep_md: true
 ---
 
-```{r setoptions,echo=FALSE}
-library(knitr)
-library(ggplot2)
-opts_chunk$set(echo = TRUE, cache = FALSE)
 
-```
 
 ## Loading and preprocessing the data
 
 We are assuming that the activity.zip file is in the current directory, so let's extract the data into a **activity.csv** file and load it.
 
 
-```{r loading}
+
+```r
 activity = read.csv(file='activity.csv',sep=',',header=TRUE,colClasses=c('integer','Date','integer'))
 ```
 
@@ -26,16 +22,24 @@ activity = read.csv(file='activity.csv',sep=',',header=TRUE,colClasses=c('intege
 
 Next let's look at the data.  We're asked to calculate the mean and median, and to make a histogram of the total number of steps taken per day.
 
-```{r basic_exploration}
+
+```r
 activity_step_mean = mean(activity$steps, na.rm = TRUE)
 activity_step_median = median(activity$steps, na.rm = TRUE)
 ```
 
-The mean of the distribution is `r activity_step_mean`, and the median is a statistically unlikely yet expected `r activity_step_median`.
+The mean of the distribution is 37.3826, and the median is a statistically unlikely yet expected 0.
 
-```{r basic_exploration_histogram}
+
+```r
 ggplot(activity, aes(date, steps),type='l') + geom_bar(stat = "identity")+ labs(title = "Total Number of Steps by Day", x = "Day", y = "Total Number of Steps")
 ```
+
+```
+## Warning: Removed 2304 rows containing missing values (position_stack).
+```
+
+![plot of chunk basic_exploration_histogram](figure/basic_exploration_histogram.png) 
 
 Note that this output warns us that there is missing data.
 
@@ -43,19 +47,23 @@ Note that this output warns us that there is missing data.
 
 Now aggregate the number of steps by the interval, and plot the results in a series.
 
-```{r daily_activity_plot}
+
+```r
 activity_by_day <- with(activity, aggregate(steps ~ interval, FUN=mean, na.rm=T))
 ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("Interval Frequency") + ylab("Steps Taken") + ggtitle("Frequency of Steps")
 ```
 
+![plot of chunk daily_activity_plot](figure/daily_activity_plot.png) 
+
 From looking at the chart, it appears that our maximum value is around 205, so lets find out.
 
-```{r daily_activity_max}
+
+```r
 activity_by_day_mean = activity_by_day[,1] * activity_by_day[,2] / activity_by_day[,1]
 activity_by_day_most = activity_by_day[which.max(activity_by_day_mean),]
 ```
 
-It looks like our most active 5-minute interval was ```r activity_by_day_most$interval```, with an mean value of ```r activity_by_day_most$steps``` steps in a typical 5-minute interval, or ```r activity_by_day_most$steps / 5``` steps per minute.
+It looks like our most active 5-minute interval was ``835``, with an mean value of ``206.1698`` steps in a typical 5-minute interval, or ``41.234`` steps per minute.
 
 ## Imputing missing values
 
