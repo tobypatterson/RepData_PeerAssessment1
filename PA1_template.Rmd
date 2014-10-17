@@ -45,7 +45,7 @@ Now aggregate the number of steps by the interval, and plot the results in a ser
 
 ```{r daily_activity_plot}
 activity_by_day <- with(activity, aggregate(steps ~ interval, FUN=mean, na.rm=T))
-ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("Interval Frequency") + ylab("Steps Taken") + ggtitle("Frequency of Steps")
+ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Steps Taken") + ggtitle("Number of Average Steps in 5 Minutes")
 ```
 
 From looking at the chart, it appears that our maximum value is around 205, so lets find out.
