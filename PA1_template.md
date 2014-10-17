@@ -50,7 +50,7 @@ Now aggregate the number of steps by the interval, and plot the results in a ser
 
 ```r
 activity_by_day <- with(activity, aggregate(steps ~ interval, FUN=mean, na.rm=T))
-ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Steps Taken") + ggtitle("Number of Average Steps in 5 Minutes")
+ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
 ```
 
 ![plot of chunk daily_activity_plot](figure/daily_activity_plot.png) 
