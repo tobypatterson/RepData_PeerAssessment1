@@ -33,8 +33,8 @@ activity_base_step_median = median(activity_base$steps, na.rm=TRUE)
 
 The mean of the distribution is `r activity_base_step_mean`, and the median is a statistically unlikely yet expected `r activity_base_step_median`.
 
-| | Mean  | Median  |
-|-|-------|-------|
+|    | Mean   | Median  |
+|---:|:------:|:-------:|
 |  Base Data | `r activity_base_step_mean`  | `r activity_base_step_median`  |
 
 Note let's look at the histogram.
@@ -91,8 +91,8 @@ ggplot(activity_full, aes(date, steps),type='l') + geom_bar(stat = "identity")+ 
 
 We can see there are notable differencesin our means, median, and histogram between our initial base dataset and the new full dataset.
 
-| | Mean  | Median  |
-|-|-------|-------|
+|    | Mean   | Median  |
+|---:|:------:|:-------:|
 |  Base Data | `r activity_base_step_mean`  | `r activity_base_step_median`  |
 |  Full Data | `r activity_full_step_mean`  | `r activity_full_step_median`  |
 

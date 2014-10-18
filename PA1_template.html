@@ -218,9 +218,19 @@ activity_base_step_median = median(activity_base$steps, na.rm=TRUE)
 
 <p>The mean of the distribution is 37.3826, and the median is a statistically unlikely yet expected 0.</p>
 
-<p>| | Mean  | Median  |
-|-|&mdash;&mdash;-|&mdash;&mdash;-|
-|  Base Data | 37.3826  | 0  |</p>
+<table><thead>
+<tr>
+<th align="right"></th>
+<th align="center">Mean</th>
+<th align="center">Median</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">Base Data</td>
+<td align="center">37.3826</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
 
 <p>Note let&#39;s look at the histogram.</p>
 
@@ -279,10 +289,24 @@ ggplot(activity_full, aes(date, steps),type=&#39;l&#39;) + geom_bar(stat = &quot
 
 <p>We can see there are notable differencesin our means, median, and histogram between our initial base dataset and the new full dataset.</p>
 
-<p>| | Mean  | Median  |
-|-|&mdash;&mdash;-|&mdash;&mdash;-|
-|  Base Data | 37.3826  | 0  |
-|  Full Data | 37.3826  | 0  |</p>
+<table><thead>
+<tr>
+<th align="right"></th>
+<th align="center">Mean</th>
+<th align="center">Median</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">Base Data</td>
+<td align="center">37.3826</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="right">Full Data</td>
+<td align="center">37.3826</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
 
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 
