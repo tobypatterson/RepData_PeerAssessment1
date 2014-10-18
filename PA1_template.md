@@ -125,4 +125,15 @@ ggplot(activity_full_by_day, aes(interval, steps)) + geom_line() + facet_grid(da
 
 ![plot of chunk detected_differences_by_day](figure/detected_differences_by_day.png) 
 
-We can see that the general distribution of intervals retains a similar distribution, with the most prominent peak around 800.  However, our 2nd highest point is not the same: approximately 1600 for weekdays, but either 1250 or 1650 for weekends.
+Although the overall distribution of intervals share a similar shape, the specific data points are notably different.  Just to make sure, let's take a look.
+
+
+```r
+activity_full_is_weekend = activity_full_by_day[activity_full_by_day$day == 'Weekend',]
+activity_full_max_weekend = activity_full_is_weekend[which.max(activity_full_is_weekend$steps),]
+activity_full_is_weekday = activity_full_by_day[activity_full_by_day$day == 'Weekday',]
+activity_full_max_weekday = activity_full_is_weekday[which.max(activity_full_is_weekday$steps),]
+```
+
+For weekdays, our maximum interval is ``835`` with an average of ``230.3782`` steps, whereas for weekends our maximum internval is ``915`` with ``166.6392`` on average.
+

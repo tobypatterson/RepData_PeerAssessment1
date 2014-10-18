@@ -110,4 +110,14 @@ activity_full_by_day <- with(activity_full, aggregate(steps ~ interval + day, FU
 ggplot(activity_full_by_day, aes(interval, steps)) + geom_line() + facet_grid(day ~ .) + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
 ```
 
-We can see that the general distribution of intervals retains a similar distribution, with the most prominent peak around 800.  However, our 2nd highest point is not the same: approximately 1600 for weekdays, but either 1250 or 1650 for weekends.
+Although the overall distribution of intervals share a similar shape, the specific data points are notably different.  Just to make sure, let's take a look.
+
+```{r detected_differences_max_value}
+activity_full_is_weekend = activity_full_by_day[activity_full_by_day$day == 'Weekend',]
+activity_full_max_weekend = activity_full_is_weekend[which.max(activity_full_is_weekend$steps),]
+activity_full_is_weekday = activity_full_by_day[activity_full_by_day$day == 'Weekday',]
+activity_full_max_weekday = activity_full_is_weekday[which.max(activity_full_is_weekday$steps),]
+```
+
+For weekdays, our maximum interval is ```r activity_full_max_weekday$interval``` with an average of ```r activity_full_max_weekday$steps``` steps, whereas for weekends our maximum internval is ```r activity_full_max_weekend$interval``` with ```r activity_full_max_weekend$steps``` on average.
+
