@@ -9,8 +9,8 @@ keep_md: true
 ```{r setoptions,echo=FALSE}
 library(knitr)
 library(ggplot2)
+library(dplyr)
 opts_chunk$set(echo = TRUE, cache = FALSE)
-
 ```
 
 ## Loading and preprocessing the data
@@ -19,7 +19,7 @@ We are assuming that the activity.zip file is in the current directory, so let's
 
 
 ```{r loading}
-activity = read.csv(file='activity.csv',sep=',',header=TRUE,colClasses=c('integer','Date','integer'))
+activity_base = read.csv(file='activity.csv',sep=',',header=TRUE,colClasses=c('integer','Date','integer'))
 ```
 
 ## What is mean total number of steps taken per day?
@@ -27,14 +27,20 @@ activity = read.csv(file='activity.csv',sep=',',header=TRUE,colClasses=c('intege
 Next let's look at the data.  We're asked to calculate the mean and median, and to make a histogram of the total number of steps taken per day.
 
 ```{r basic_exploration}
-activity_step_mean = mean(activity$steps, na.rm = TRUE)
-activity_step_median = median(activity$steps, na.rm = TRUE)
+activity_base_step_mean = mean(activity_base$steps, na.rm=TRUE)
+activity_base_step_median = median(activity_base$steps, na.rm=TRUE)
 ```
 
-The mean of the distribution is `r activity_step_mean`, and the median is a statistically unlikely yet expected `r activity_step_median`.
+The mean of the distribution is `r activity_base_step_mean`, and the median is a statistically unlikely yet expected `r activity_base_step_median`.
+
+| | Mean  | Median  |
+|-|-------|-------|
+|  Base Data | `r activity_base_step_mean`  | `r activity_base_step_median`  |
+
+Note let's look at the histogram.
 
 ```{r basic_exploration_histogram}
-ggplot(activity, aes(date, steps),type='l') + geom_bar(stat = "identity")+ labs(title = "Total Number of Steps by Day", x = "Day", y = "Total Number of Steps")
+ggplot(activity_base, aes(date, steps),type='l') + geom_bar(stat = "identity")+ labs(title = "Total Number of Steps by Day", x = "Day", y = "Total Number of Steps")
 ```
 
 Note that this output warns us that there is missing data.
@@ -44,7 +50,7 @@ Note that this output warns us that there is missing data.
 Now aggregate the number of steps by the interval, and plot the results in a series.
 
 ```{r daily_activity_plot}
-activity_by_day <- with(activity, aggregate(steps ~ interval, FUN=mean, na.rm=T))
+activity_by_day <- with(activity_base, aggregate(steps ~ interval, FUN=mean, na.rm=T))
 ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
 ```
 
@@ -59,6 +65,35 @@ It looks like our most active 5-minute interval was ```r activity_by_day_most$in
 
 ## Imputing missing values
 
+Our next task is to find, count, and replace missing values.  We're interested in missing data values, those of the steps.
 
+```{r impute_missing_values_test}
+total_missing_values = sum(is.na(activity_base$steps))
+```
+
+We have `r total_missing_values` missing values, so lets fix them by filling them with their equivalent average.
+
+```{r impute_missing_values_transform}
+activity_full = transform(activity_base, 
+  steps = ifelse(is.na(steps), 
+    ave(steps, interval, FUN = function(x) mean(x, na.rm = TRUE)), 
+    steps)
+  )
+```
+
+Let's see the effect.
+
+```{r impute_missing_values_report}
+activity_full_step_mean = mean(activity_full$steps)
+activity_full_step_median = median(activity_full$steps)
+ggplot(activity_full, aes(date, steps),type='l') + geom_bar(stat = "identity")+ labs(title = "Total Number of Steps by Day", x = "Day", y = "Total Number of Steps")
+```
+
+We can see there are notable differencesin our means, median, and histogram between our initial base dataset and the new full dataset.
+
+| | Mean  | Median  |
+|-|-------|-------|
+|  Base Data | `r activity_base_step_mean`  | `r activity_base_step_median`  |
+|  Full Data | `r activity_full_step_mean`  | `r activity_full_step_median`  |
 
 ## Are there differences in activity patterns between weekdays and weekends?
