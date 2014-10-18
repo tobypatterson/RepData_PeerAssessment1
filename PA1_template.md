@@ -114,7 +114,7 @@ The lack of change in these values between the base and full datasets suggests t
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Now lets compare weekdays to weekends.  To do this, we need to determine if an observation was made on a weekend or weekeday, then plot the data using this new variable as a facet.
+Now lets compare weekdays to weekends.  To do this, we need to determine if an observation was made on a weekend or weekday, then plot the data using this new variable as a facet.
 
 
 ```r

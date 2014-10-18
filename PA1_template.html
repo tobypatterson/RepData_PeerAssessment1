@@ -313,7 +313,7 @@ ggplot(activity_full, aes(date, steps),type=&#39;l&#39;) + geom_bar(stat = &quot
 
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 
-<p>Now lets compare weekdays to weekends.  To do this, we need to determine if an observation was made on a weekend or weekeday, then plot the data using this new variable as a facet.</p>
+<p>Now lets compare weekdays to weekends.  To do this, we need to determine if an observation was made on a weekend or weekday, then plot the data using this new variable as a facet.</p>
 
 <pre><code class="r">activity_full$day = factor( ifelse(weekdays(activity_full$date) %in% c(&quot;Saturday&quot;,&quot;Sunday&quot;),&#39;Weekend&#39;,&#39;Weekday&#39;) )
 activity_full_by_day &lt;- with(activity_full, aggregate(steps ~ interval + day, FUN=mean, na.rm=T))
