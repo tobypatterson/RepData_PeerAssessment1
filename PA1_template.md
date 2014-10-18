@@ -30,8 +30,8 @@ activity_base_step_median = median(activity_base$steps, na.rm=TRUE)
 
 The mean of the distribution is 37.3826, and the median is a statistically unlikely yet expected 0.
 
-| | Mean  | Median  |
-|-|-------|-------|
+|    | Mean  | Median  |
+|---:|:------|:------|
 |  Base Data | 37.3826  | 0  |
 
 Note let's look at the histogram.
