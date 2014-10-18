@@ -24,15 +24,16 @@ Next let's look at the data.  We're asked to calculate the mean and median, and 
 
 
 ```r
-activity_base_step_mean = mean(activity_base$steps, na.rm=TRUE)
-activity_base_step_median = median(activity_base$steps, na.rm=TRUE)
+activity_base_by_day = with(activity_base, aggregate(steps ~ interval, FUN=mean, na.rm=T))
+activity_base_step_mean = mean(activity_base_by_day$steps)
+activity_base_step_median = median(activity_base_by_day$steps)
 ```
 
-The mean of the distribution is 37.3826, and the median is a statistically unlikely yet expected 0.
+The mean of the distribution is 37.3826, and the median is 34.1132.
 
 |    | Mean   | Median  |
 |---:|:------:|:-------:|
-|  Base Data | 37.3826  | 0  |
+|  Base Data | 37.3826  | 34.1132  |
 
 Note let's look at the histogram.
 
@@ -55,8 +56,7 @@ Now aggregate the number of steps by the interval, and plot the results in a ser
 
 
 ```r
-activity_by_day <- with(activity_base, aggregate(steps ~ interval, FUN=mean, na.rm=T))
-ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
+ggplot(activity_base_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
 ```
 
 ![plot of chunk daily_activity_plot](figure/daily_activity_plot.png) 
@@ -65,8 +65,8 @@ From looking at the chart, it appears that our maximum value is around 205, so l
 
 
 ```r
-activity_by_day_mean = activity_by_day[,1] * activity_by_day[,2] / activity_by_day[,1]
-activity_by_day_most = activity_by_day[which.max(activity_by_day_mean),]
+activity_base_by_day_mean = activity_base_by_day[,1] * activity_base_by_day[,2] / activity_base_by_day[,1]
+activity_base_by_day_most = activity_base_by_day[which.max(activity_base_by_day_mean),]
 ```
 
 It looks like our most active 5-minute interval was ``835``, with an mean value of ``206.1698`` steps in a typical 5-minute interval, or ``41.234`` steps per minute.
@@ -95,18 +95,34 @@ Let's see the effect.
 
 
 ```r
-activity_full_step_mean = mean(activity_full$steps)
-activity_full_step_median = median(activity_full$steps)
+activity_full_by_day <- with(activity_full, aggregate(steps ~ interval, FUN=mean, na.rm=T))
+activity_full_step_mean = mean(activity_full_by_day$steps)
+activity_full_step_median = median(activity_full_by_day$steps)
 ggplot(activity_full, aes(date, steps),type='l') + geom_bar(stat = "identity")+ labs(title = "Total Number of Steps by Day", x = "Day", y = "Total Number of Steps")
 ```
 
 ![plot of chunk impute_missing_values_report](figure/impute_missing_values_report.png) 
 
-We can see there are notable differencesin our means, median, and histogram between our initial base dataset and the new full dataset.
+Looking at the new means, median, and histogram, we don't see any major differences in the data.  The only difference appears to be that the histogram now presents data for every day.
 
 |    | Mean   | Median  |
 |---:|:------:|:-------:|
-|  Base Data | 37.3826  | 0  |
-|  Full Data | 37.3826  | 0  |
+|  Base Data | 37.3826  | 34.1132  |
+|  Full Data | 37.3826  | 34.1132  |
+
+The lack of change in these values between the base and full datasets suggests that our imputing of additional data may not significantly altering our analysis.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Now lets compare weekdays to weekends.  To do this, we need to determine if an observation was made on a weekend or weekeday, then plot the data using this new variable as a facet.
+
+
+```r
+activity_full$day = factor( ifelse(weekdays(activity_full$date) %in% c("Saturday","Sunday"),'Weekend','Weekday') )
+activity_full_by_day <- with(activity_full, aggregate(steps ~ interval + day, FUN=mean, na.rm=T))
+ggplot(activity_full_by_day, aes(interval, steps)) + geom_line() + facet_grid(day ~ .) + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
+```
+
+![plot of chunk detected_differences_by_day](figure/detected_differences_by_day.png) 
+
+We can see that the general distribution of intervals retains a similar distribution, with the most prominent peak around 800.  However, our 2nd highest point is not the same: approximately 1600 for weekdays, but either 1250 or 1650 for weekends.

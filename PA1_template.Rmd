@@ -27,11 +27,12 @@ activity_base = read.csv(file='activity.csv',sep=',',header=TRUE,colClasses=c('i
 Next let's look at the data.  We're asked to calculate the mean and median, and to make a histogram of the total number of steps taken per day.
 
 ```{r basic_exploration}
-activity_base_step_mean = mean(activity_base$steps, na.rm=TRUE)
-activity_base_step_median = median(activity_base$steps, na.rm=TRUE)
+activity_base_by_day = with(activity_base, aggregate(steps ~ interval, FUN=mean, na.rm=T))
+activity_base_step_mean = mean(activity_base_by_day$steps)
+activity_base_step_median = median(activity_base_by_day$steps)
 ```
 
-The mean of the distribution is `r activity_base_step_mean`, and the median is a statistically unlikely yet expected `r activity_base_step_median`.
+The mean of the distribution is `r activity_base_step_mean`, and the median is `r activity_base_step_median`.
 
 |    | Mean   | Median  |
 |---:|:------:|:-------:|
@@ -50,18 +51,18 @@ Note that this output warns us that there is missing data.
 Now aggregate the number of steps by the interval, and plot the results in a series.
 
 ```{r daily_activity_plot}
-activity_by_day <- with(activity_base, aggregate(steps ~ interval, FUN=mean, na.rm=T))
-ggplot(activity_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
+
+ggplot(activity_base_by_day, aes(interval, steps)) + geom_line() + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
 ```
 
 From looking at the chart, it appears that our maximum value is around 205, so lets find out.
 
 ```{r daily_activity_max}
-activity_by_day_mean = activity_by_day[,1] * activity_by_day[,2] / activity_by_day[,1]
-activity_by_day_most = activity_by_day[which.max(activity_by_day_mean),]
+activity_base_by_day_mean = activity_base_by_day[,1] * activity_base_by_day[,2] / activity_base_by_day[,1]
+activity_base_by_day_most = activity_base_by_day[which.max(activity_base_by_day_mean),]
 ```
 
-It looks like our most active 5-minute interval was ```r activity_by_day_most$interval```, with an mean value of ```r activity_by_day_most$steps``` steps in a typical 5-minute interval, or ```r activity_by_day_most$steps / 5``` steps per minute.
+It looks like our most active 5-minute interval was ```r activity_base_by_day_most$interval```, with an mean value of ```r activity_base_by_day_most$steps``` steps in a typical 5-minute interval, or ```r activity_base_by_day_most$steps / 5``` steps per minute.
 
 ## Imputing missing values
 
@@ -84,16 +85,29 @@ activity_full = transform(activity_base,
 Let's see the effect.
 
 ```{r impute_missing_values_report}
-activity_full_step_mean = mean(activity_full$steps)
-activity_full_step_median = median(activity_full$steps)
+activity_full_by_day <- with(activity_full, aggregate(steps ~ interval, FUN=mean, na.rm=T))
+activity_full_step_mean = mean(activity_full_by_day$steps)
+activity_full_step_median = median(activity_full_by_day$steps)
 ggplot(activity_full, aes(date, steps),type='l') + geom_bar(stat = "identity")+ labs(title = "Total Number of Steps by Day", x = "Day", y = "Total Number of Steps")
 ```
 
-We can see there are notable differencesin our means, median, and histogram between our initial base dataset and the new full dataset.
+Looking at the new means, median, and histogram, we don't see any major differences in the data.  The only difference appears to be that the histogram now presents data for every day.
 
 |    | Mean   | Median  |
 |---:|:------:|:-------:|
 |  Base Data | `r activity_base_step_mean`  | `r activity_base_step_median`  |
 |  Full Data | `r activity_full_step_mean`  | `r activity_full_step_median`  |
 
+The lack of change in these values between the base and full datasets suggests that our imputing of additional data may not significantly altering our analysis.
+
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Now lets compare weekdays to weekends.  To do this, we need to determine if an observation was made on a weekend or weekeday, then plot the data using this new variable as a facet.
+
+```{r detected_differences_by_day}
+activity_full$day = factor( ifelse(weekdays(activity_full$date) %in% c("Saturday","Sunday"),'Weekend','Weekday') )
+activity_full_by_day <- with(activity_full, aggregate(steps ~ interval + day, FUN=mean, na.rm=T))
+ggplot(activity_full_by_day, aes(interval, steps)) + geom_line() + facet_grid(day ~ .) + xlab("5 Minute Intervals") + ylab("Number of Average Steps in 5 Minutes") + ggtitle("Frequency of Steps in 5 Minute Intervals")
+```
+
+We can see that the general distribution of intervals retains a similar distribution, with the most prominent peak around 800.  However, our 2nd highest point is not the same: approximately 1600 for weekdays, but either 1250 or 1650 for weekends.
